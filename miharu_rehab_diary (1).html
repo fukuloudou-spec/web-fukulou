@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>みはるリハビリ記録 — 十勝リハビリテーションセンター</title>
+<style>
+  :root {
+    --ink: #1a1a18;
+    --ink-soft: #4a4a46;
+    --ink-muted: #8a8a84;
+    --page: #faf9f6;
+    --warm: #f0ede6;
+    --accent: #c45a28;
+    --accent-soft: #f5e8e0;
+    --accent-mid: #e8a07a;
+    --green: #3a6b2a;
+    --green-soft: #e8f0e4;
+    --line: #e0ddd6;
+    --radius: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Meiryo', sans-serif;
+    background: var(--page);
+    color: var(--ink);
+    line-height: 1.8;
+    font-size: 15px;
+  }
+
+  /* ── ヘッダー ── */
+  header {
+    background: var(--ink);
+    color: #fff;
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .header-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--accent-mid);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  header h1 {
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+    margin-bottom: 1rem;
+  }
+
+  .header-meta {
+    font-size: 13px;
+    color: #aaa;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .header-meta span::before {
+    content: "— ";
+    opacity: 0.5;
+  }
+
+  /* ── プログレスバー ── */
+  .progress-strip {
+    background: var(--warm);
+    border-bottom: 1px solid var(--line);
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+
+  .progress-bar-wrap {
+    flex: 1;
+    min-width: 200px;
+    max-width: 400px;
+    height: 8px;
+    background: var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    width: 42%;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-mid) 100%);
+    border-radius: 4px;
+  }
+
+  .progress-note {
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* ── メインレイアウト ── */
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  /* ── 目標バナー ── */
+  .goal-banner {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 1rem 1.25rem;
+    margin-bottom: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .goal-icon { font-size: 1.4rem; }
+
+  .goal-text {
+    font-size: 14px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .goal-sub {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-top: 2px;
+  }
+
+  /* ── セクションタイトル ── */
+  .section-title {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* ── タイムライン ── */
+  .timeline {
+    position: relative;
+    margin-bottom: 3rem;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--line);
+  }
+
+  .entry {
+    display: grid;
+    grid-template-columns: 42px 1fr;
+    gap: 0 1rem;
+    margin-bottom: 1.75rem;
+    position: relative;
+  }
+
+  .entry-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--page);
+    box-shadow: 0 0 0 1px var(--accent);
+    margin-top: 6px;
+    justify-self: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .entry-dot.milestone {
+    width: 14px;
+    height: 14px;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft), 0 0 0 4px var(--accent);
+  }
+
+  .entry-dot.regular {
+    background: var(--ink-muted);
+    box-shadow: 0 0 0 1px var(--ink-muted);
+  }
+
+  .entry-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    transition: border-color 0.15s;
+  }
+
+  .entry-card:hover {
+    border-color: var(--accent-mid);
+  }
+
+  .entry-date {
+    font-size: 11px;
+    color: var(--ink-muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+
+  .entry-days {
+    display: inline-block;
+    font-size: 10px;
+    background: var(--warm);
+    color: var(--ink-muted);
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-left: 6px;
+  }
+
+  .entry-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+  }
+
+  .entry-summary {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.75;
+    margin-bottom: 0.75rem;
+  }
+
+  .entry-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 0.75rem;
+  }
+
+  .tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    color: var(--ink-muted);
+    background: var(--warm);
+  }
+
+  .tag.highlight {
+    background: var(--accent-soft);
+    border-color: var(--accent-mid);
+    color: var(--accent);
+  }
+
+  .entry-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 4px 10px;
+    border: 1px solid var(--accent-mid);
+    border-radius: var(--radius);
+    transition: background 0.12s;
+  }
+
+  .entry-link:hover {
+    background: var(--accent-soft);
+  }
+
+  .entry-link svg {
+    flex-shrink: 0;
+  }
+
+  /* ── SNS引用カード ── */
+  .entry-card.sns {
+    background: var(--warm);
+    border-color: var(--line);
+    border-left: 3px solid var(--ink-muted);
+  }
+
+  .sns-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .sns-quote {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.85;
+    margin-bottom: 0.75rem;
+    font-style: italic;
+    white-space: pre-line;
+  }
+
+  .sns-note {
+    font-size: 12px;
+    color: var(--ink-muted);
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    border-left: 2px solid var(--accent-mid);
+    line-height: 1.7;
+  }
+
+  /* ── 使用機器 ── */
+  .devices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 3rem;
+  }
+
+  .device-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1rem;
+  }
+
+  .device-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .device-role {
+    font-size: 11px;
+    color: var(--ink-muted);
+    line-height: 1.6;
+  }
+
+  .device-icon {
+    font-size: 1.3rem;
+    margin-bottom: 6px;
+  }
+
+  /* ── みはるの強み ── */
+  .strength-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    margin-bottom: 3rem;
+  }
+
+  .strength-card {
+    background: var(--green-soft);
+    border: 1px solid #c8dfc2;
+    border-radius: var(--radius);
+    padding: 1rem;
+  }
+
+  .strength-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 4px;
+  }
+
+  .strength-desc {
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.65;
+  }
+
+  /* ── フッター ── */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 12px;
+    color: var(--ink-muted);
+    border-top: 1px solid var(--line);
+  }
+
+  /* ── レスポンシブ ── */
+  @media (max-width: 500px) {
+    header { padding: 2rem 1rem 1.75rem; }
+    main { padding: 1.5rem 1rem 3rem; }
+    .timeline::before { left: 16px; }
+    .entry { grid-template-columns: 34px 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="header-eyebrow">十勝リハビリテーションセンター・進捗記録</p>
+  <h1>みはる、回復の記録</h1>
+  <div class="header-meta">
+    <span>発症 2026年4月20日</span>
+    <span>転院 2026年6月2日</span>
+    <span>目標 2026年8月・バースデーソング🎵</span>
+  </div>
+</header>
+
+<div class="progress-strip">
+  <span class="progress-label">転院後の回復フェーズ</span>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill"></div>
+  </div>
+  <span class="progress-note">訓練期 → 自立期 移行中 ✨</span>
+</div>
+
+<main>
+
+  <div class="goal-banner">
+    <span class="goal-icon">🎂</span>
+    <div>
+      <div class="goal-text">目標：8月の誕生日にバースデーソングを歌う</div>
+      <div class="goal-sub">発声・体幹・呼吸、すべてが今のリハビリにつながっている</div>
+    </div>
+  </div>
+
+  <!-- タイムライン -->
+  <p class="section-title">記録タイムライン</p>
+  <div class="timeline">
+
+    <!-- 6月16日 -->
+    <div class="entry">
+      <div class="entry-dot regular"></div>
+      <div class="entry-card">
+        <div class="entry-date">2026年6月16日 <span class="entry-days">転院14日目</span></div>
+        <div class="entry-title">「イメージ力」で全セラピストを驚かせた日</div>
+        <div class="entry-summary">
+          ショックマスター（お尻の筋肉強化）を初体験し「チョロかった！」と余裕でクリア。
+          言語聴覚士から「喉の奥を上げて」の指示を、説明を聞いてイメージして見事成功。
+          PT・OT・STの全員に「こんな患者さん、初めて！」と驚かれる。
+        </div>
+        <div class="entry-tags">
+          <span class="tag highlight">🧠 イメージ力</span>
+          <span class="tag">嚥下訓練</span>
+          <span class="tag">ショックマスター初体験</span>
+          <span class="tag">ADL</span>
+        </div>
+        <a class="entry-link" href="https://docs.google.com/document/d/1VC8juISr6ES7VrIplW8JU7lf2txWk6PSJyrjrCCXEwM/edit" target="_blank">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          詳しい記録を読む
+        </a>
+      </div>
+    </div>
+
+    <!-- 6月20日 -->
+    <div class="entry">
+      <div class="entry-dot regular"></div>
+      <div class="entry-card">
+        <div class="entry-date">2026年6月20日 <span class="entry-days">転院18日目</span></div>
+        <div class="entry-title">使っている機器の正体を一つ一つ確かめた日</div>
+        <div class="entry-summary">
+          「ショックマスターはネット画像と違ってグローブくらい大きい」という気づきを報告。
+          カタカナ名は覚えられても英語混じりは難しい、という正直な感覚もシェア。
+          自分の体感を言葉にして訂正していく姿勢自体が、脳の再学習になっている。
+        </div>
+        <div class="entry-tags">
+          <span class="tag">機器の把握</span>
+          <span class="tag">ショックマスター詳細</span>
+          <span class="tag highlight">💬 自分で観察・修正</span>
+        </div>
+        <a class="entry-link" href="https://docs.google.com/document/d/1vKWhy18CF5BlSOIiSwH9Ik9dSBqxmT_DcCLP4IdVoPM/edit" target="_blank">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          詳しい記録を読む
+        </a>
+      </div>
+    </div>
+
+    <!-- 6月24日 SNS投稿 -->
+    <div class="entry">
+      <div class="entry-dot regular"></div>
+      <div class="entry-card sns">
+        <div class="entry-date">2026年6月24日 <span class="entry-days">転院22日目</span></div>
+        <div class="sns-label">✍️ みはる本人の言葉 — SNS投稿より</div>
+        <div class="sns-quote">入院して、2か月が経った。身体がすっかり弱くなってる。
+
+子どもたちと会った時、全然話せず、話せる兆候もなかったのに、高い目標をつい設置してしまい、「8月のあなたの誕生日に、バースデーソングを歌えるくらい、回復するからね」と言ってしまった。その時は希望が必要だった。正確には、文字盤で会話したのだが😂
+
+6月の現時点では、それを叶えるのはかなり難しい。正直、全くできる気がしない。だが、不可能を可能にするのが親😛　子どものために頑張るっきゃない💪
+
+一生懸命、口を開けても、声は出てこないし、歌なんて🎤絶望的だなぁ。</div>
+        <div class="sns-note">この投稿から7日後の7月1日、発語訓練中に「アナウンサーなりきり」で声質が突然変わり、言語聴覚士が驚く。文字盤でしか会話できなかった状態から、声が戻るまでの距離がここに記録されている。</div>
+      </div>
+    </div>
+
+    <!-- 6月25日 -->
+    <div class="entry">
+      <div class="entry-dot regular"></div>
+      <div class="entry-card">
+        <div class="entry-date">2026年6月25日 <span class="entry-days">転院23日目</span></div>
+        <div class="entry-title">午後4セッション連続・ハードスケジュールをこなした日</div>
+        <div class="entry-summary">
+          午前は入浴＋心理検査、午後はPT→ST→OT→PTとほぼ休みなし4時間のリハビリ。
+          心理検査で今後のリハビリ計画の指標を取得。
+          全身筋肉痛の中でも「どうなるんだろっていう面白さ」で乗り切る。
+        </div>
+        <div class="entry-tags">
+          <span class="tag">心理検査</span>
+          <span class="tag">集中リハビリ4時間</span>
+          <span class="tag highlight">💪 根性</span>
+        </div>
+        <a class="entry-link" href="https://docs.google.com/document/d/18WzgS29OKVpl7ZB_o9HYooMbBotx_TWtfYmzht_mj60/edit" target="_blank">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          詳しい記録を読む
+        </a>
+      </div>
+    </div>
+
+    <!-- 6月27日 -->
+    <div class="entry">
+      <div class="entry-dot milestone"></div>
+      <div class="entry-card">
+        <div class="entry-date">2026年6月27日（土） <span class="entry-days">転院25日目</span></div>
+        <div class="entry-title">🏆 入浴自立・食器洗い開始——「VIP待遇」卒業！</div>
+        <div class="entry-summary">
+          AIリハビリは土日お休み。HCU療養中（窓の景色なし）、夜間トイレは付き添い必要。
+          一方で、これまで付き添いが必要だったお風呂に一人で歩いて行き、一人用の浴槽に入ることになった。施設から「食器洗いをしてください」との指示も。本人は「まだVIP待遇でいたかった」とこぼしながらも（笑）、これは施設が「実生活レベルに達した」と判断したサイン。
+        </div>
+        <div class="entry-tags">
+          <span class="tag highlight">🛁 入浴自立</span>
+          <span class="tag highlight">🍽️ 食器洗い開始</span>
+          <span class="tag">HCU療養中</span>
+          <span class="tag">AIリハ休日</span>
+        </div>
+        <details style="margin-top: 0.75rem;">
+          <summary style="font-size: 12px; color: var(--accent); cursor: pointer; font-weight: 600;">✍️ みはる本人のメッセージを読む</summary>
+          <div class="sns-quote" style="margin-top: 0.75rem;">恐れがないとは言われてる。リハビリで、新しいことする時、すくむ人が多いのに、わたしはガァって思い切って、足出せるって。
+
+そんなん、できなくて当然、行くしかないやん！って思うけど、そこはかなりびっくりされる。だから進歩するんだって。怖くないの？と言われるけど、それより、どうなるんだろって面白さがあるかも</div>
+          <div class="sns-note">食器洗いについては「主婦なめんな」と一言。HCUにいる状態で食器洗いをこなしていることの驚異的さを、本人はまだ自覚していない。</div>
+        </details>
+        <div style="margin-top: 0.75rem;">
+          <a class="entry-link" href="https://docs.google.com/document/d/1meWZSpTNwMKCfm2SDneXHSqJSmBnJcUBFD9dacUarTI/edit" target="_blank">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            詳しい記録を読む
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6月28日 -->
+    <div class="entry">
+      <div class="entry-dot regular"></div>
+      <div class="entry-card">
+        <div class="entry-date">2026年6月28日（日） <span class="entry-days">転院26日目</span></div>
+        <div class="entry-title">MAG-REX判明・調理リハビリ・足首ケア</div>
+        <div class="entry-summary">
+          ずっと「グローブみたいな機器」と言っていたものの正体が磁気刺激装置「MAG-REX」だと判明。お尻の筋肉強化に使っており、効果も実感している。
+          食器洗いに続いて「調理」も始まることが判明——なんとPTさん自腹で食材を用意し、みはるがPTさんの夕食を作るという展開に。午後はショックマスターで足首の筋肉をほぐす。
+        </div>
+        <div class="entry-tags">
+          <span class="tag highlight">🔬 MAG-REX判明</span>
+          <span class="tag highlight">🍳 調理リハビリへ</span>
+          <span class="tag">足首ケア</span>
+          <span class="tag">筋肉強化実感</span>
+        </div>
+        <details style="margin-top: 0.75rem;">
+          <summary style="font-size: 12px; color: var(--accent); cursor: pointer; font-weight: 600;">✍️ みはる本人のメッセージを読む</summary>
+          <div class="sns-quote" style="margin-top: 0.75rem;">（MAG-REXのURLを送ってきて）これこれ。グローブみたいなのって、これ、今日使った。
+
+お尻の筋肉強化するためにやってるんだけど、確かにお尻に筋肉ついて来たよ
+
+調理もあるの！なんと、それ、理学療法士さんの自腹！わたしも今度、その方の夕食兼ねて作るんだぁ
+
+いまは、ショックマスターで、足首の筋肉を柔らかくしてきたよ</div>
+        </details>
+        <div style="margin-top: 0.75rem;">
+          <a class="entry-link" href="https://docs.google.com/document/d/1fNwhQDDrDVjto2FfSmEgFc9DdK2KSJIHz3oMrQR0_vk/edit" target="_blank">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            詳しい記録を読む
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6月29日 -->
+    <div class="entry">
+      <div class="entry-dot milestone"></div>
+      <div class="entry-card">
+        <div class="entry-date">2026年6月29日（月） <span class="entry-days">転院27日目</span></div>
+        <div class="entry-title">🏆 階段昇降・屋外歩行・「左手で食べよう」——自分でリハビリを動かした日</div>
+        <div class="entry-summary">
+          杖で2階から1階の階段を自力で昇り降り。外に出て芝生・砂利・スロープ・短い階段の不整地を歩き、外の空気を吸う。左手のマッサージ＋ボール投げ＋タオル畳みも。
+          最大のポイントは「左手で食べてみよう」という提案をみはる自身がしたこと。リハビリの主導権がほぼ本人にある状態に。PTさんが触ったことのない機器を「わたしで試して」と言い、セラピスト側が実験台にしてもらうという逆転現象が起きている。
+        </div>
+        <div class="entry-tags">
+          <span class="tag highlight">🚶 階段昇降達成</span>
+          <span class="tag highlight">🌿 屋外歩行</span>
+          <span class="tag highlight">✋ 左手提案</span>
+          <span class="tag">全身筋肉痛</span>
+        </div>
+        <details style="margin-top: 0.75rem;">
+          <summary style="font-size: 12px; color: var(--accent); cursor: pointer; font-weight: 600;">✍️ みはる本人のメッセージを読む</summary>
+          <div class="sns-quote" style="margin-top: 0.75rem;">階段を二階から一階へと短い間でしたが、杖で登って降りてしました。また、外へも出かけて、芝生や砂利、スロープ、短い階段などを乗り越えて、気持ちいい外の空気を味わったよ。
+
+あとは、左手の上がらない部分を上がるための筋肉マッサージとボールを持ち上げて、投げっこ。タオルのたたみ。たくさんやったね。あと午後ひとつ✌️
+
+（友人とのやりとりコピペ）
+「みはるのリハビリがアスリート並みなの、今日初めて可視化出来た感覚😳」
+「左手が麻痺してるのにね😂」
+「それなのよ！！！！！ たくさん使えって。じゃあ、ご飯も左手で食べようって、びっくりな発想だったみたい。右ききだから」
+「ちょっと待って、みはるの提案？？」
+「もうさ、珍患者って言葉で間に合わないのよｗ もちろん。リハビリに関しては、ほぼ私からの提案よ」
+😲😲😲😲😲😲😲😲😲😲
+
+で、理学療法士さんも、触ったことない機器だから、わたしで試して（たくさん失敗して）、使えるようになったらいいよ😚って悪魔のささやきを笑笑 実験台にしてもらってる</div>
+        </details>
+        <div style="margin-top: 0.75rem;">
+          <a class="entry-link" href="https://docs.google.com/document/d/1GBlRt9sdVrkf42NDwbFkJ1FsQctgzus5WAK0OrlrtdQ/edit" target="_blank">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            詳しい記録を読む
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6月30日 -->
+    <div class="entry">
+      <div class="entry-dot regular"></div>
+      <div class="entry-card">
+        <div class="entry-date">2026年6月30日（火） <span class="entry-days">転院28日目</span></div>
+        <div class="entry-title">リハビリ11時スタート——ゆとりの朝に講座を作る</div>
+        <div class="entry-summary">
+          この日のリハビリはいつもより遅い11時開始。生まれた朝の時間に、思春期向け講座の作成に取り組む。全身筋肉痛が続く中でも、自分の仕事・役割に意識が向いている状態。
+        </div>
+        <div class="entry-tags">
+          <span class="tag">リハビリ11時〜</span>
+          <span class="tag highlight">📝 講座作成</span>
+          <span class="tag">全身筋肉痛 継続</span>
+        </div>
+        <details style="margin-top: 0.75rem;">
+          <summary style="font-size: 12px; color: var(--accent); cursor: pointer; font-weight: 600;">✍️ みはる本人のメッセージを読む</summary>
+          <div class="sns-quote" style="margin-top: 0.75rem;">おはー
+リハビリは、今日はなんと11時から！
+ゆとり‼️
+この時間に、思春期講座の講座ひとつ作るつもり</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- 7月1日 -->
+    <div class="entry">
+      <div class="entry-dot milestone"></div>
+      <div class="entry-card">
+        <div class="entry-date">2026年7月1日（水） <span class="entry-days">転院29日目</span></div>
+        <div class="entry-title">🏆 声が戻った・24時間歩行許可——6月24日から7日間の奇跡</div>
+        <div class="entry-summary">
+          朝に体幹チェック＋病院一周。発語訓練中に「アナウンサーになりきる」と突然声の質が変わり、STが「何かしましたか？」と驚く。左肩の痛みもボール・輪投げで改善。
+          歩行訓練では「プロセスをすっ飛ばして」杖あり・24時間・2階フロア内の自由歩行が許可される。訓練後、友人と1時間電話しながら自主トレも継続——話す＋動くの二重課題。
+          6月24日「声が全く出ない、歌は絶望的」という投稿からわずか7日での変化。
+        </div>
+        <div class="entry-tags">
+          <span class="tag highlight">🎤 発声回復</span>
+          <span class="tag highlight">🚶 24時間歩行許可</span>
+          <span class="tag">デュアルタスク</span>
+          <span class="tag">左肩改善</span>
+        </div>
+        <details style="margin-top: 0.75rem;">
+          <summary style="font-size: 12px; color: var(--accent); cursor: pointer; font-weight: 600;">✍️ みはる本人のメッセージを読む</summary>
+          <div class="sns-quote" style="margin-top: 0.75rem;">昨日のリハビリは、朝体幹のチェック、そのまま病院一周、発語の訓練で、アナウンサーになりすましたら、うまく声が出る。突然声の質と音が変わって、「何かしました？」と聞かれるも、自分がアナウンサーと思って話してたなんて恥ずかしいと思いつつも、言ったら、「なるほどー！いいですね。声も高くなって聞きやすかった」とのこと。
+
+それから、上肢の訓練。左肩の痛みをなんとかしたくて、なんとかして〜と言ったら、マッサージに始まり、ボールや輪投げを通して肩の訓練を徹底してやる。其の後、下肢の訓練は歩く訓練を。いきなり、プロセスをすっ飛ばして、今日から、杖ありで、24時間二階のみ歩行OKの許可出る。
+
+訓練終わり、友だちと1時間ほど電話してる間も、自主トレに励む美春であった🤭</div>
+          <div class="sns-note">6月24日「一生懸命口を開けても声は出てこない。歌なんて絶望的」——あの投稿からちょうど7日後。</div>
+        </details>
+        <div style="margin-top: 0.75rem;">
+          <a class="entry-link" href="https://docs.google.com/document/d/1ohvwuTi_q3Gynl0jOpEtyi-LQ9TCmw0fn4j05upRZqw/edit" target="_blank">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            詳しい記録を読む
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /timeline -->
+
+  <!-- 使用機器 -->
+  <p class="section-title">使っている先進機器</p>
+  <div class="devices-grid">
+    <div class="device-card">
+      <div class="device-icon">🧲</div>
+      <div class="device-name">rTMS（反復経頭蓋磁気刺激）</div>
+      <div class="device-role">脳の司令塔を整える。ゴールデンタイムの土台づくり。</div>
+    </div>
+    <div class="device-card">
+      <div class="device-icon">🎮</div>
+      <div class="device-name">mediVRカグラ</div>
+      <div class="device-role">VRで脳の情報処理を正常化。ゲーム感覚でバランス訓練。</div>
+    </div>
+    <div class="device-card">
+      <div class="device-icon">💥</div>
+      <div class="device-name">フィジオ ショックマスター</div>
+      <div class="device-role">圧力波で筋肉をほぐす。お尻の筋肉強化に使用中。</div>
+    </div>
+    <div class="device-card">
+      <div class="device-icon">🧤</div>
+      <div class="device-name">MAG-REX（マグリクス）</div>
+      <div class="device-role">磁気で筋肉を直接動かす。「グローブみたい」な形状。</div>
+    </div>
+    <div class="device-card">
+      <div class="device-icon">🤖</div>
+      <div class="device-name">安川電機 LR2</div>
+      <div class="device-role">歩行動作をロボットがアシスト。歩行訓練の相棒。</div>
+    </div>
+  </div>
+
+  <!-- みはるの強み -->
+  <p class="section-title">みはるの強み——セラピストたちが驚いていること</p>
+  <div class="strength-list">
+    <div class="strength-card">
+      <div class="strength-title">🧠 驚異的なイメージ力</div>
+      <div class="strength-desc">「まずイメージを持たせて」と目を閉じてシミュレーション。その後の動作成功率が高く、全セラピストに「そんな患者さん初めて！」と言われる。</div>
+    </div>
+    <div class="strength-card">
+      <div class="strength-title">💪 恐れを知らない能動性</div>
+      <div class="strength-desc">新しい動作に「すくむ」ことなくガァって踏み出せる。失敗を面白がる心が脳の再プログラミングを加速させている。</div>
+    </div>
+    <div class="strength-card">
+      <div class="strength-title">🎭 なりきり・アイデア力</div>
+      <div class="strength-desc">「アナウンサーになりきる」で突然声質が改善。「左手で食べてみよう」など、自分でメニューを提案してセラピストを驚かせる。</div>
+    </div>
+    <div class="strength-card">
+      <div class="strength-title">✍️ 観察・言語化力</div>
+      <div class="strength-desc">機器の形状や感覚を「グローブくらい大きい」など正確に言語化。記録として残すことで脳の整理にもなっている。</div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  この記録は友人のメッセージをもとにまとめたものです。最終更新 2026年7月1日
+</footer>
+
+</body>
+</html>
